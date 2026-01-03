@@ -1,0 +1,71 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+
+  "inbounds": [
+    {
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      }
+    }
+  ],
+
+  "outbounds": [
+    {
+      "tag": "proxy",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "SERVER_IP",
+            "port": 443,
+            "users": [
+              {
+                "id": "UUID",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/ws"
+        }
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    }
+  ],
+
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "domain:papa-johns.ru",
+          "domain:papajohns.ru",
+          "domain:pizzahut.ru",
+          "domain:papa-johns.com",
+          "domain:papajohns.com"
+        ],
+        "outboundTag": "proxy"
+      },
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "network": "tcp,udp"
+      }
+    ]
+  }
+}
